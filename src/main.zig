@@ -1,13 +1,11 @@
 const std = @import("std");
 
-//input buffer storage
-
 const InputBuffer = struct {
-    buffer: [*]u8, //char* equivalent
-    bufferLength: usize, // like size_t in C
-    inputLength: isize, // ssize_t equivalent
+    buffer: [*]u8, //char array
+    bufferLength: usize,
+    inputLength: isize,
 
-    //constructor for the buffer
+    //constructor
     pub fn init() InputBuffer {
         return InputBuffer{
             .buffer = undefined,
@@ -17,4 +15,18 @@ const InputBuffer = struct {
     }
 };
 
-pub fn main() !void {}
+pub fn main() !void {
+    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
+    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
+
+    // stdout is for the actual output of your application, for example if you
+    // are implementing gzip, then only the compressed bytes should be sent to
+    // stdout, not any debugging messages.
+    const stdout_file = std.io.getStdOut().writer();
+    var bw = std.io.bufferedWriter(stdout_file);
+    const stdout = bw.writer();
+
+    try stdout.print("Run `zig build test` to run the tests.\n", .{});
+
+    try bw.flush(); // don't forget to flush!
+}
